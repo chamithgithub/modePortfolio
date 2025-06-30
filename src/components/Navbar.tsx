@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Menu, X } from 'lucide-react'; // optional icon package, or use emoji/svg
 
 const Navbar = () => {

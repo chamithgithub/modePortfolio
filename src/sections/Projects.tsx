@@ -1,5 +1,5 @@
 // import React from 'react';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 
 import project1 from '../assets/PortfolioWebsite.jpg'; // Import your image
@@ -125,7 +125,7 @@ const projects = [
 
             return (
               <div
-                key={project.title + index}
+                key={(project?.title || 'undefined') + index}
                 className={`absolute left-1/2 top-1/2 transition-all duration-1000 ease-in-out`}
                 style={{
                   transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${scale})`,
@@ -137,16 +137,16 @@ const projects = [
                 <div className="group p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
                   <div className="relative h-40 overflow-hidden rounded-lg mb-4">
                     <img 
-                      src={project.image} 
-                      alt={project.title}
+                      src={project?.image || 'default-image.jpg'} 
+                      alt={project?.title || 'No title available'}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{project.title}</h3>
-                  <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm">{project.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{project?.title || 'Untitled Project'}</h3>
+                  <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm">{project?.description || 'No description available'}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {project.tags.map(tag => (
+                    {project?.tags?.map(tag => (
                       <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded-full">
                         {tag}
                       </span>

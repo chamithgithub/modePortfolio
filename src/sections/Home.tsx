@@ -1,4 +1,3 @@
-import React from 'react';
 import moon from '../assets/Moonsun.svg';
 import yourImage from '../assets/profile.jpg';
 const Home = () => {

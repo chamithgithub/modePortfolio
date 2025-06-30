@@ -1,4 +1,3 @@
-import React from 'react';
 import yourImage from '../assets/sideimg.jpg'; // Import your image
 
 const About = () => {
