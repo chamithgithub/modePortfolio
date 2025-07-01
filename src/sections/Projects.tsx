@@ -89,16 +89,6 @@ const projects = [
     return () => clearInterval(interval);
   }, []);
 
-  // Calculate which projects to show (always shows all projects in rotation)
-  const getVisibleProjects = () => {
-    const visible = [];
-    for (let i = 0; i < projects.length; i++) {
-      const index = (activeIndex + i) % projects.length;
-      visible.push(projects[index]);
-    }
-    return visible;
-  };
-
   return (
     <div className="py-12 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -111,7 +101,7 @@ const projects = [
 
         {/* Circular Carousel Container */}
         <div className="relative h-[500px]">
-          {getVisibleProjects().map((project, index) => {
+          {projects.map((project, index) => {
             // Calculate position in circle
             const angle = (index / projects.length) * Math.PI * 2;
             const radius = 180;
