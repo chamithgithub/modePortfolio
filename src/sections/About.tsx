@@ -1,4 +1,4 @@
-import yourImage from '../assets/sideimg.jpg'; // Import your image
+import yourImage from '../assets/acpic2.jpg'; // Import your image
 
 const About = () => {
   return (
