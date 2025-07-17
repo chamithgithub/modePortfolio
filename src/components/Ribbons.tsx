@@ -40,16 +40,17 @@ const Ribbons: React.FC<RibbonsProps> = ({
 
     const renderer = new Renderer({ dpr: window.devicePixelRatio || 2, alpha: true });
     const gl = renderer.gl;
-    if (Array.isArray(backgroundColor) && backgroundColor.length === 4) {
-      gl.clearColor(
-        backgroundColor[0],
-        backgroundColor[1],
-        backgroundColor[2],
-        backgroundColor[3]
-      );
+    if (
+      Array.isArray(backgroundColor) &&
+      backgroundColor.length === 4 &&
+      backgroundColor.every((v) => typeof v === 'number')
+    ) {
+      gl.clearColor(...(backgroundColor as [number, number, number, number]));
     } else {
       gl.clearColor(0, 0, 0, 0);
     }
+    
+    
 
     gl.canvas.style.position = 'absolute';
     gl.canvas.style.top = '0';
@@ -189,9 +190,11 @@ const Ribbons: React.FC<RibbonsProps> = ({
       let x: number, y: number;
       if (!container) return;
       const rect = container.getBoundingClientRect();
-      if ('changedTouches' in e && e.changedTouches.length) {
-        x = e.changedTouches[0].clientX - rect.left;
-        y = e.changedTouches[0].clientY - rect.top;
+      if ('changedTouches' in e && e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        x = (touch?.clientX ?? 0) - rect.left;
+        y = (touch?.clientY ?? 0) - rect.top;
+        
       } else if (e instanceof MouseEvent) {
         x = e.clientX - rect.left;
         y = e.clientY - rect.top;
@@ -215,32 +218,45 @@ const Ribbons: React.FC<RibbonsProps> = ({
       const currentTime = performance.now();
       const dt = currentTime - lastTime;
       lastTime = currentTime;
-
+    
       lines.forEach(line => {
+        const p0 = line.points[0];
+        if (!p0) return;
+      
         tmp.copy(mouse)
           .add(line.mouseOffset)
-          .sub(line.points[0])
+          .sub(p0)
           .multiply(line.spring);
         line.mouseVelocity.add(tmp).multiply(line.friction);
-        line.points[0].add(line.mouseVelocity);
-
+        p0.add(line.mouseVelocity);
+      
         for (let i = 1; i < line.points.length; i++) {
+          const current = line.points[i];
+          const previous = line.points[i - 1];
+      
+          if (!current || !previous) continue;
+      
           if (isFinite(maxAge) && maxAge > 0) {
             const segmentDelay = maxAge / (line.points.length - 1);
             const alpha = Math.min(1, (dt * speedMultiplier) / segmentDelay);
-            line.points[i].lerp(line.points[i - 1], alpha);
+            current.lerp(previous, alpha);
           } else {
-            line.points[i].lerp(line.points[i - 1], 0.9);
+            current.lerp(previous, 0.9);
           }
         }
-        if (line.polyline.mesh.program.uniforms.uTime) {
-          line.polyline.mesh.program.uniforms.uTime.value = currentTime * 0.001;
+      
+        const uniforms = line.polyline?.mesh?.program?.uniforms;
+        if (uniforms?.uTime) {
+          uniforms.uTime.value = currentTime * 0.001;
         }
+      
         line.polyline.updateGeometry();
       });
-
+      
+    
       renderer.render({ scene });
     }
+    
     update();
 
     return () => {
